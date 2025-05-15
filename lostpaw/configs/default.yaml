@@ -9,20 +9,20 @@ use_wandb: False
 use_tqdm: True
 
 # Model Hyperparameters
-epochs: 15
-latent_space_size: 512
-batch_size: 4
-test_batch_size: 4
+epochs: 5
+latent_space_size: 128
+batch_size: 1
+test_batch_size: 1
 test_batch_count: 8
 save_model_every: 50
-early_stopping_epochs: 15
+early_stopping_epochs: 3
 cross_validiton_k_fold: 1
 
 # Optimizer
 optimizer: "adamw"
 optimizer_params: 
   lr: 0.1
-  weight_decay: 4.0e-2
+  weight_decay: 0.04
 
 # Contrastive loss
 contrastive_margin: 0.9
