@@ -1,3 +1,32 @@
+# 使い方
+```bash
+# install DogFaceNet dataset
+mkdir ./output
+mkdir ./output/data
+wget https://zenodo.org/records/12578449/files/DogFaceNet_alignment.zip -O ./output/data/images.zip
+unzip ./output/data/images.zip -d ./output/data/ && rm ./output/data/images.zip
+chmod +x generate_dogfacenet_data.sh
+./generate_dogfacenet_data.sh
+
+# build
+docker buildx build --load -t lostpaw-transformer .
+
+# mount & run
+docker run -it --rm -v $(pwd):/app -w /app \
+  --env OPENBLAS_NUM_THREADS=1 \
+  --env OMP_NUM_THREADS=1 \
+  lostpaw-transformer bash
+  
+
+# pip
+pip install --upgrade pip
+pip install -e .
+pip install "wandb==0.15.12" "pydantic<2.0"
+
+# train
+python scripts/train.py -c lostpaw/configs/default.yaml
+```
+
 # LostPaw: Finding Lost Pets using a Contrastive Learning Transformer
 
 This project is a study on the use of artificial intelligence in identifying lost pets. Specifically, we trained a contrastive neural network model to differentiate between pictures of dogs and evaluated its performance on a held-out test set. The goal of this project is to explore the potential of AI in the search for lost pets and to discuss the implications of these results. The project includes code for the model training and evaluation, but not the data used in the study. However, we do provide the scripts used to acquire the data.

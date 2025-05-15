@@ -95,8 +95,15 @@ class RandomPairDataset(Dataset):
         self.folder = folder
         self.same_probability = same_probability
         df = folder.data_frame()
-        self.pets = df.groupby("pet_id").agg(dict(paths=list))
+        print(f"[DEBUG] DataFrame from PetImagesFolder:\n{df.head()}")
+
+        # ✅ 修正：groupby不要
+        self.pets = df.set_index("pet_id")
         self.pets = self.pets[self.pets["paths"].map(lambda p: len(p) > 1)]
+
+        print(f"[DEBUG] pets in dataframe: {len(df)}")
+        print(f"[DEBUG] grouped pets: {len(self.pets)}")
+
         self.fold_count = fold_count
         self.current_fold = 0 if fold_count is not None else None
 

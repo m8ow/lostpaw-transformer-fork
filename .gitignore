@@ -10,3 +10,6 @@ pictures/
 
 wandb/
 output/
+
+.idea
+.DS_Store
