@@ -47,8 +47,10 @@ def extract_images(
                     paths = [save_image(image, label, output_dir) for image in augmented]
 
                     processed_file.write(f"{path}\n")
-                    resulting_file.write(json.dumps(
-                        dict(source_path=path, pet_id=label, augmented=paths)))
+                    for aug_path in paths:
+                        resulting_file.write(json.dumps(dict(paths=aug_path, pet_id=label, source_path=path)))
+                        resulting_file.write("\n")
+
                     resulting_file.write("\n")
 
                 processed_file.flush()
