@@ -13,18 +13,17 @@ from torch.optim import Adam, AdamW, SGD
 import numpy as np
 from PIL.Image import Image
 
-device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-
-
 class Trainer:
     def __init__(
         self,
         config: TrainConfig,
         data: Optional[RandomPairDataset] = None,
         seed: Optional[int] = None,
+        device: Optional[torch.device] = None,
     ) -> None:
         logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 
+        self.device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.config = config
         self.batches_per_epoch = config.batches_per_epoch
         self.model_path = Path(config.model_path)
@@ -39,7 +38,7 @@ class Trainer:
 
         # ViT model
         self.vit_model = PetViTContrastiveModel(
-            config.model_path, config.latent_space_size, device=device
+            config.model_path, config.latent_space_size, device=self.device
         ).to(device)
         self.load_model()
 
@@ -62,7 +61,7 @@ class Trainer:
             self.pet_data = data
 
         logging.info("Trainer initialized")
-        logging.info(f"Using device: {device}")
+        logging.info(f"Using device: {self.device}")
         logging.info("Train config:")
         logging.info(f"{config}")
 
@@ -130,8 +129,8 @@ class Trainer:
                 # Merge the images for the contrastive loss
                 # fatures: [batch_size, 2, output_dim]
                 # labels: [batch_size]
-                features = torch.stack([features1, features2], dim=1).to(device)
-                labels = torch.tensor(given_labels, dtype=torch.float32).to(device)
+                features = torch.stack([features1, features2], dim=1).to(self.device)
+                labels = torch.tensor(given_labels, dtype=torch.float32).to(self.device)
                 distance = self.contrastive_loss.euclidean_distance(features)
 
                 # Compute the loss
@@ -240,8 +239,8 @@ class Trainer:
             features1 = self.vit_model(imgs1)
             features2 = self.vit_model(imgs2)
 
-            features = torch.stack([features1, features2], dim=1).to(device)
-            labels = torch.tensor(labels, dtype=torch.float32).to(device)
+            features = torch.stack([features1, features2], dim=1).to(self.device)
+            labels = torch.tensor(labels, dtype=torch.float32).to(self.device)
             distance = self.contrastive_loss.euclidean_distance(features)
             return self.compute_metrics(labels, distance, batch_size)
 

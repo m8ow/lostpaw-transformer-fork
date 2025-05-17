@@ -45,7 +45,7 @@ python scripts/extract_pets_merge.py \
   output/data
 
 # train
-python scripts/train.py -c lostpaw/configs/default.yaml
+CUDA_VISIBLE_DEVICES=0 python scripts/train.py -c lostpaw/configs/default.yaml
 
 # run again
 docker start -ai lostpaw-transformer-dev
