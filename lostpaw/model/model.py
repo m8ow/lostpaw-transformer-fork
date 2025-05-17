@@ -16,9 +16,10 @@ class PetViTContrastiveModel(nn.Module):
         self.vit_encoder = None
         self.vit_model = None
         self.model_path = Path(model_path)
-        self.fetch_vit()
 
         self.device = device
+
+        self.fetch_vit()
 
         self.latent_space = nn.Sequential(
             # 577 = 384 / 16 * 384 / 16 + 1 (cls token)
