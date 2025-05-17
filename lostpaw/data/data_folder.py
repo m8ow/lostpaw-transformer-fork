@@ -60,13 +60,17 @@ class PetImagesFolder:
         df = self.data_frame()
         df.to_json(self.info_file, orient="records", lines=True, default_handler=str)
 
-    def get_record(self, idx: int) -> Tuple[List[Path], int, str]:
+    def get_record(self, idx: int) -> Tuple[List[Path], str, str]:
+        # Ensure self.paths[idx] is a list
+        raw_paths = self.paths[idx]
+        if isinstance(raw_paths, str) or isinstance(raw_paths, Path):
+            raw_paths = [raw_paths]
+
         paths = [
-            Path(p) if Path(p).is_absolute else self.image_folder / Path(p)
-            for p in self.paths[idx]
+            Path(p) if Path(p).is_absolute() else self.image_folder / Path(p)
+            for p in raw_paths
         ]
         pet_id = self.pet_ids[idx]
-
         source = str(self.sources[idx]) if self.sources else None
         return (paths, pet_id, source)
 
