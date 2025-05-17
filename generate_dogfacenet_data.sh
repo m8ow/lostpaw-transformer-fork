@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OUTPUT_FILE="./output/raw-data/raw-data.jsonl"
+OUTPUT_FILE="./output/raw-data/converted.jsonl"
 BASE_DIR="./output/raw-data"
 
 rm -f "$OUTPUT_FILE"
@@ -13,20 +13,13 @@ for f in ${BASE_DIR}/*.jpg; do
     echo "$f" >> "tmp_pet_map/$pet_id.txt"
 done
 
-# 各 pet_id に対して全画像を列挙
+# 各 pet_id に対して画像を1枚ずつ出力（PetImageDataset 用）
 for pet_file in tmp_pet_map/*.txt; do
     pet_id=$(basename "$pet_file" .txt)
-    mapfile -t images < "$pet_file"
-    if [ "${#images[@]}" -gt 0 ]; then
-        path_list=""
-        for img in "${images[@]}"; do
-            path_list+="\"$img\","
-        done
-        # Remove trailing comma
-        path_list=${path_list%,}
-        echo "{\"pet_id\": \"$pet_id\", \"paths\": [${path_list}]}" >> "$OUTPUT_FILE"
-    fi
+    while IFS= read -r img; do
+        echo "{\"petId\": \"$pet_id\", \"savedPath\": \"$img\"}" >> "$OUTPUT_FILE"
+    done < "$pet_file"
 done
 
 rm -r tmp_pet_map
-echo "✅ train.data (all image paths per pet_id) written to $OUTPUT_FILE"
+echo "✅ converted.jsonl (1 image per line) written to $OUTPUT_FILE"
