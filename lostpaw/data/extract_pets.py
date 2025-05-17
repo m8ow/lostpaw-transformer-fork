@@ -1,14 +1,15 @@
 from transformers import DetrFeatureExtractor, DetrForObjectDetection
-from typing import Iterable, List, Optional, Sequence, Sized, Tuple, TypeVar
+from typing import Iterable, List, Optional, Sequence, Tuple, TypeVar
 from pathlib import Path
 from PIL.Image import Image, new as newImage
 import logging
 import torch
 
-L = TypeVar('L') 
+L = TypeVar('L')
 
 class DetrPetExtractor:
-    def __init__(self, path: Path):
+    def __init__(self, path: Path, device: str = "cpu"):
+        self.device = torch.device(device)
         self.feature_extractor: DetrFeatureExtractor = None
         self.model: DetrForObjectDetection = None
         self.load_extractor(path)
@@ -25,19 +26,23 @@ class DetrPetExtractor:
 
         Args:
             images: List of images to extract pets from.
-            labels: List of labels for each image. If provided, the output will be a list of tuples (image, (label, pet)).
-            threshold: Threshold for the model to consider a prediction as valid.
-            output_size: Size of the output images. If None, the output images will have the same size as the input images.
+            labels: List of labels for each image.
+            threshold: Confidence threshold for predictions.
+            output_size: Resized output size (width, height).
 
         Returns:
-            List of images or List of tuples (image, (label, pet)).
+            List of (cropped_image, label) tuples.
         """
 
         inputs = self.feature_extractor(images=images, return_tensors="pt")
-        outputs = self.model(**inputs)
+        inputs = {k: v.to(self.device) for k, v in inputs.items()}
+        self.model.to(self.device)
+        self.model.eval()
 
-        # Get the predicted bounding boxes and labels
-        target_sizes = torch.tensor([i.size[::-1] for i in images])
+        with torch.no_grad():
+            outputs = self.model(**inputs)
+
+        target_sizes = torch.tensor([img.size[::-1] for img in images]).to(self.device)
         results = self.feature_extractor.post_process_object_detection(
             outputs, target_sizes=target_sizes
         )
@@ -65,20 +70,15 @@ class DetrPetExtractor:
         ):
             box = [int(x) for x in box]
 
-            if score > threshold:
-                # Save only if the label is "cat" or "dog"
-                if (label == 17) or (label == 18):
-                    img_crop = image.crop(box)
-                    if output_size:
-                        img_crop = self.resize(img_crop, output_size)
-
-                    imgs.append(img_crop)
+            if score > threshold and (label == 17 or label == 18):
+                img_crop = image.crop(box)
+                if output_size:
+                    img_crop = self.resize(img_crop, output_size)
+                imgs.append(img_crop)
 
         return imgs
 
     def resize(self, image: Image, size):
-        # Resize the image to the size of the model
-        # Keep the aspect ratio
         width, height = image.size
         if width > height:
             new_width = size[0]
@@ -87,12 +87,10 @@ class DetrPetExtractor:
             new_width = int(width * size[1] / height)
             new_height = size[1]
 
-        # Fill the rest with black
         new_image = newImage("RGB", size, (0, 0, 0))
-        # Paste the resized image in the center
         new_image.paste(
             image.resize((new_width, new_height)),
-            (int((size[0] - new_width) / 2), int((size[1] - new_height) / 2)),
+            ((size[0] - new_width) // 2, (size[1] - new_height) // 2),
         )
 
         return new_image
@@ -118,20 +116,15 @@ class DetrPetExtractor:
             self.save_extractor(path)
 
     def save_extractor(self, path: Path):
-        if not Path(path).exists():
-            Path(path).mkdir(parents=True, exist_ok=True)
-
+        Path(path).mkdir(parents=True, exist_ok=True)
         model_path = Path(path) / "extractor_model"
         feature_path = Path(path) / "extractor_feature"
-
         self.model.save_pretrained(str(model_path))
         self.feature_extractor.save_pretrained(str(feature_path))
 
 
 def lookup_next_image_name(folder_path: Path) -> Path:
     i = len(list(folder_path.glob("*.jpg")))
-
     while (folder_path / f"{i}.jpg").exists():
         i += 1
-
     return folder_path / f"{i}.jpg"
