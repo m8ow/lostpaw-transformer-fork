@@ -39,7 +39,6 @@ def extract_images(
                 cropped: List[Tuple[Image, Tuple[str, Any]]] = pet_extractor.extract(
                     input_images, labels, output_size=(384, 384)
                 )
-
                 for image, (label, path) in cropped:
                     augmented = pet_augment.get_transforms(image, 2)
                     augmented.insert(0, image)
@@ -47,10 +46,12 @@ def extract_images(
                     paths = [save_image(image, label, output_dir) for image in augmented]
 
                     processed_file.write(f"{path}\n")
-                    for aug_path in paths:
-                        resulting_file.write(json.dumps(dict(paths=aug_path, pet_id=label, source_path=path)))
-                        resulting_file.write("\n")
 
+                    resulting_file.write(json.dumps({
+                        "paths": paths[1:],  # augmentedのみ（paths[0]はoriginal）
+                        "pet_id": label,
+                        "source_path": paths[0]
+                    }, ensure_ascii=False))
                     resulting_file.write("\n")
 
                 processed_file.flush()
