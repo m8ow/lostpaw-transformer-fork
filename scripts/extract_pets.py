@@ -1,4 +1,7 @@
 from argparse import ArgumentParser, Namespace
+import multiprocessing
+multiprocessing.set_start_method("spawn", force=True)
+
 from glob import glob
 import json
 import logging
