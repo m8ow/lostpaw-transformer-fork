@@ -4,18 +4,25 @@ import json
 import logging
 from pathlib import Path
 from typing import Any, List, Set, Tuple
-from lostpaw.data import PetImageDataset, DetrPetExtractor
-from lostpaw.data.auto_augment import DataAugmenter
 from multiprocessing import Process
+import torch
 from PIL.Image import Image
 
+from lostpaw.data import PetImageDataset, DetrPetExtractor
+from lostpaw.data.auto_augment import DataAugmenter
 from lostpaw.data.extract_pets import lookup_next_image_name
 
-def extract_images(data: PetImageDataset, output_dir: Path, model_path: Path, batch_size: int = 4):
-    logging.basicConfig(
-        format="[%(levelname)s] %(message)s", level=logging.INFO)
 
-    pet_extractor = DetrPetExtractor(model_path)
+def extract_images(
+    data: PetImageDataset,
+    output_dir: Path,
+    model_path: Path,
+    batch_size: int = 4,
+    device: str = "cpu"
+):
+    logging.basicConfig(format="[%(levelname)s] %(message)s", level=logging.INFO)
+
+    pet_extractor = DetrPetExtractor(model_path, device=device)
     pet_augment = DataAugmenter()
 
     with open(output_dir / "processed.txt", "at") as processed_file:
@@ -27,14 +34,14 @@ def extract_images(data: PetImageDataset, output_dir: Path, model_path: Path, ba
                 labels = zip(input_labels, input_paths)
 
                 cropped: List[Tuple[Image, Tuple[str, Any]]] = pet_extractor.extract(
-                    input_images, labels, output_size=(384, 384))
+                    input_images, labels, output_size=(384, 384)
+                )
 
                 for image, (label, path) in cropped:
                     augmented = pet_augment.get_transforms(image, 2)
                     augmented.insert(0, image)
 
-                    paths = [save_image(image, label, output_dir)
-                             for image in augmented]
+                    paths = [save_image(image, label, output_dir) for image in augmented]
 
                     processed_file.write(f"{path}\n")
                     resulting_file.write(json.dumps(
@@ -50,8 +57,7 @@ def save_image(image, label, output_dir):
     if not folder_path.exists():
         folder_path.mkdir(parents=True, exist_ok=True)
 
-    path = lookup_next_image_name(folder_path);
-
+    path = lookup_next_image_name(folder_path)
     image.save(path)
     return str(path.resolve())
 
@@ -59,25 +65,31 @@ def save_image(image, label, output_dir):
 def main(args: Namespace):
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
-    processed_file_paths = glob(
-        str(output_dir / "**" / "processed.txt"), recursive=True)
+    processed_file_paths = glob(str(output_dir / "**" / "processed.txt"), recursive=True)
     ignore: Set[str] = set()
     for processed_file_path in processed_file_paths:
         with open(processed_file_path, "rt") as processed_file:
-            ignore.union(l.strip() for l in processed_file.readlines())
+            ignore.update(l.strip() for l in processed_file.readlines())
 
     pet_data = PetImageDataset.load_from_file(Path(args.info_file), ignore=ignore)
+
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    print(f"[INFO] Using device: {device}")
 
     processes: List[Process] = []
     for i, data_subset in enumerate(pet_data.split(args.threads)):
         sub_out_path = output_dir / f"thread_{i}"
         sub_out_path.mkdir(exist_ok=True)
-        process = Process(target=extract_images, args=[data_subset, sub_out_path, args.model_path])
+        process = Process(
+            target=extract_images,
+            args=[data_subset, sub_out_path, args.model_path, args.batch_size, device]
+        )
         process.start()
         processes.append(process)
 
     for process in processes:
         process.join()
+
 
 if __name__ == "__main__":
     parser = ArgumentParser()
@@ -90,7 +102,5 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    logging.basicConfig(
-        format="[%(levelname)s] %(message)s", level=logging.INFO)
-
+    logging.basicConfig(format="[%(levelname)s] %(message)s", level=logging.INFO)
     main(args)
