@@ -11,7 +11,7 @@ from PIL.Image import Image
 
 from lostpaw.data.extract_pets import lookup_next_image_name
 
-def extract_images(data: PetImagesDataset, output_dir: Path, model_path: Path, batch_size: int = 4):
+def extract_images(data: PetImageDataset, output_dir: Path, model_path: Path, batch_size: int = 4):
     logging.basicConfig(
         format="[%(levelname)s] %(message)s", level=logging.INFO)
 
@@ -66,7 +66,7 @@ def main(args: Namespace):
         with open(processed_file_path, "rt") as processed_file:
             ignore.union(l.strip() for l in processed_file.readlines())
 
-    pet_data = PetImagesDataset.load_from_file(Path(args.info_file), ignore=ignore)
+    pet_data = PetImageDataset.load_from_file(Path(args.info_file), ignore=ignore)
 
     processes: List[Process] = []
     for i, data_subset in enumerate(pet_data.split(args.threads)):
