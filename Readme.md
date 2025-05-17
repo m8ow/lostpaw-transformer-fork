@@ -12,16 +12,19 @@ chmod +x generate_dogfacenet_data.sh
 docker buildx build --load -t lostpaw-transformer .
 
 # mount & run
-docker run -it --rm -v $(pwd):/app -w /app \
-  --env OPENBLAS_NUM_THREADS=1 \
-  --env OMP_NUM_THREADS=1 \
+docker run -it --rm \
+  --gpus all \
+  -v $(pwd):/app -w /app \
   lostpaw-transformer bash
-  
 
 # pip
 pip install --upgrade pip
 pip install -e .
 pip install "wandb==0.15.12" "pydantic<2.0"
+
+# pick broken image
+## ここで壊れた画像見つける
+python pick_broken_image.py
 
 # train
 python scripts/train.py -c lostpaw/configs/default.yaml
