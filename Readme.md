@@ -5,6 +5,7 @@ mkdir ./output
 mkdir ./output/data
 wget https://zenodo.org/records/12578449/files/DogFaceNet_alignment.zip -O ./output/data/images.zip
 unzip ./output/data/images.zip -d ./output/data/ && rm ./output/data/images.zip
+# unzipない場合: `python3 -c "import zipfile, os; z='./output/data/images.zip'; zipfile.ZipFile(z).extractall('./output/data/'); os.remove(z)"`
 chmod +x generate_dogfacenet_data.sh
 ./generate_dogfacenet_data.sh
 
@@ -12,22 +13,28 @@ chmod +x generate_dogfacenet_data.sh
 docker buildx build --load -t lostpaw-transformer .
 
 # mount & run
-docker run -it --rm \
+docker run -it \
   --gpus all \
+  --dns 8.8.8.8 \
+  --name lostpaw-transformer-dev \
   -v $(pwd):/app -w /app \
   lostpaw-transformer bash
 
-# pip
+# init pip
 pip install --upgrade pip
 pip install -e .
 pip install "wandb==0.15.12" "pydantic<2.0"
 
-# pick broken image
-## ここで壊れた画像見つける
+# pick broken images
+## ここで壊れた画像見つける→チェック漏れると学習失敗するので回避したいところ
 python pick_broken_image.py
 
 # train
 python scripts/train.py -c lostpaw/configs/default.yaml
+
+# run again
+docker start -ai lostpaw-transformer-dev
+docker exec -it lostpaw-transformer-dev bash
 ```
 
 # LostPaw: Finding Lost Pets using a Contrastive Learning Transformer
@@ -78,7 +85,7 @@ python scripts/train.py -c lostpaw/configs/default.yaml --info_path "output/data
 
 The `info_path` flag requires a file that contains rows of image entries, which have a format similar to the following:
 
-```json
+```jsonl
 {"pet_id": "35846622", "paths": ["output/data/35846622/0.jpg", "output/data/35846622/1.jpg", "output/data/35846622/2.jpg"]}
 {"pet_id": "35846624", "paths": ["output/data/35846624/0.jpg", "output/data/35846624/1.jpg", "output/data/35846624/2.jpg"]}
 ``` 
