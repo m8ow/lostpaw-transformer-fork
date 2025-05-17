@@ -81,6 +81,12 @@ class PetImagesFolder:
             if isinstance(image, ImageT):
                 image.save(image_path)
             elif isinstance(image, Path):
+                if str(image) in ["", "/"]:  # 安全に文字列に変換してチェック
+                    print(f"[WARN] Skipping invalid image path: {image}")
+                    continue
+                if not image.exists():
+                    print(f"[WARN] Image path does not exist: {image}")
+                    continue
                 shutil.copy(image, image_path)
             else:
                 raise ValueError(f"invalid image type given: {type(image)}")
