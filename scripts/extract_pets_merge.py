@@ -17,43 +17,40 @@ if __name__ == "__main__":
     target_path_processed = target_path / "processed.txt"
     target_path_processed.touch(exist_ok=True)
 
-    # 統合先 PetImagesFolder の作成
     target_folder = PetImagesFolder(target_path)
-
-    # --- 統合されたレコードを保持するための辞書 ---
     petid_to_pairs = defaultdict(list)
 
     for source in args.src:
         source_folder = PetImagesFolder(source)
 
-        # processed.txt のマージ
+        # ✅ processed.txt のマージ
         processed_path = source / "processed.txt"
         with open(target_path_processed, "at") as processed:
             with open(processed_path, "rt") as src_processed:
                 copyfileobj(src_processed, processed)
 
-        # train.data の読み込みとペア構築
+        # ✅ train.data の読み込みとペア構築
         data_file = source / "train.data"
         with open(data_file, "rt") as f:
             for line in f:
                 line = line.strip()
                 if not line:
-                    continue  # ✅ 空行スキップ
+                    continue
                 record = json.loads(line)
 
                 pet_id = record["pet_id"]
                 source_path = record["source_path"]
-                augmented_paths = record["paths"]
+                augmented_paths = record["paths"]  # リスト
 
                 for aug_path in augmented_paths:
                     petid_to_pairs[pet_id].append([source_path, aug_path])
 
-        # 対象画像もマージ（必要に応じて）
+        # ✅ 対象画像のコピー
         for idx in range(len(source_folder)):
             images, pet_id, source = source_folder.get_record(idx)
             target_folder.add_record(images, pet_id, source)
 
-    # 結果を書き出し
+    # ✅ 結果を書き出し
     output_data_file = target_path / "train.data"
     with open(output_data_file, "w") as f:
         for pet_id, pairs in petid_to_pairs.items():

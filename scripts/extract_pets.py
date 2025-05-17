@@ -41,16 +41,17 @@ def extract_images(
                 )
                 for image, (label, path) in cropped:
                     augmented = pet_augment.get_transforms(image, 2)
-                    augmented.insert(0, image)
+                    augmented.insert(0, image)  # 元画像を先頭に
 
                     paths = [save_image(image, label, output_dir) for image in augmented]
 
-                    processed_file.write(f"{path}\n")
+                    processed_file.write(f"{paths[0]}\n")  # 元画像
 
+                    # ✅ 正しい形式で1行出力（JSONL）
                     resulting_file.write(json.dumps({
-                        "paths": paths[1:],  # augmentedのみ（paths[0]はoriginal）
                         "pet_id": label,
-                        "source_path": paths[0]
+                        "source_path": paths[0],  # 元画像
+                        "paths": paths[1:]        # augmented画像のみ
                     }, ensure_ascii=False))
                     resulting_file.write("\n")
 
