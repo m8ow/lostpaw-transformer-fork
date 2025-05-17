@@ -40,9 +40,10 @@ if __name__ == "__main__":
 
                 pet_id = record["pet_id"]
                 source_path = record["source_path"]
-                augmented_paths = record["paths"]  # リスト
+                augmented_paths = record["paths"]
 
                 for aug_path in augmented_paths:
+                    # 相対パス or 絶対パスをそのまま保持
                     petid_to_pairs[pet_id].append([source_path, aug_path])
 
         # ✅ 対象画像のコピー
@@ -50,11 +51,16 @@ if __name__ == "__main__":
             images, pet_id, source = source_folder.get_record(idx)
             target_folder.add_record(images, pet_id, source)
 
-    # ✅ 結果を書き出し
+    # ✅ 結果を書き出し（バックスラッシュ除去のため ensure_ascii=False & separators 使用）
     output_data_file = target_path / "train.data"
-    with open(output_data_file, "w") as f:
+    with open(output_data_file, "w", encoding="utf-8") as f:
         for pet_id, pairs in petid_to_pairs.items():
-            json.dump({"pet_id": pet_id, "paths": pairs}, f, ensure_ascii=False)
+            json.dump(
+                {"pet_id": pet_id, "paths": pairs},
+                f,
+                ensure_ascii=False,
+                separators=(",", ":")  # ← バックスラッシュの出力防止
+            )
             f.write("\n")
 
     target_folder.save_info()

@@ -32,7 +32,6 @@ chmod +x generate_dogfacenet_data.sh
 
 ## ペット画像の切り出しとAugmentation
 huggingface-cli login # tokenを自分で発行して、入力してください
-mkdir ./output/weights
 python scripts/extract_pets.py \
   --info_file ./output/raw-data/raw-data.jsonl \
   --model_path ./output/weights \
