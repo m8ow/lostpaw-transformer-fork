@@ -23,13 +23,13 @@ if __name__ == "__main__":
     for source in args.src:
         source_folder = PetImagesFolder(source)
 
-        # ✅ processed.txt のマージ
+        # ✅ processed.txt をマージ
         processed_path = source / "processed.txt"
         with open(target_path_processed, "at") as processed:
             with open(processed_path, "rt") as src_processed:
                 copyfileobj(src_processed, processed)
 
-        # ✅ train.data の読み込み → 画像パスだけ集める
+        # ✅ train.data を読み込んで pet_id ごとの画像パスを集める
         data_file = source / "train.data"
         with open(data_file, "rt") as f:
             for line in f:
@@ -37,17 +37,22 @@ if __name__ == "__main__":
                 if not line:
                     continue
                 record = json.loads(line)
-
                 pet_id = record["pet_id"]
-                all_paths = [record["source_path"]] + record["paths"]
+
+                # record に source_path があるか確認（元形式対応）
+                if "source_path" in record:
+                    all_paths = [record["source_path"]] + record["paths"]
+                else:
+                    all_paths = record["paths"]
+
                 petid_to_all_images[pet_id].extend(all_paths)
 
-        # ✅ 対象画像のコピー
+        # ✅ 画像をターゲットフォルダに追加（train.data はまだ書き出さない）
         for idx in range(len(source_folder)):
             images, pet_id, source = source_folder.get_record(idx)
-            target_folder.add_record(images, pet_id, source)
+            target_folder.add_record(images, pet_id, source, write_data_file=False)  # write_data_file=False がポイント
 
-    # ✅ ペア形式に変換： anchor → others 形式
+    # ✅ 最後にペア形式で train.data を出力
     output_data_file = target_path / "train.data"
     with open(output_data_file, "w", encoding="utf-8") as f:
         for pet_id, paths in petid_to_all_images.items():
@@ -55,9 +60,9 @@ if __name__ == "__main__":
                 continue
             anchor = paths[0]
             pairs = [[anchor, p] for p in paths[1:]]
-
             json.dump({"pet_id": pet_id, "paths": pairs}, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 
+    # 情報保存（おそらく images.info.json など）
     target_folder.save_info()
     print(f"✅ Merged pair-form train.data written to: {output_data_file}")
