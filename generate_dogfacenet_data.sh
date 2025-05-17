@@ -1,7 +1,7 @@
 #!/bin/bash
 
 OUTPUT_FILE="./output/data/train.data"
-BASE_DIR="/app/output/data/images"
+BASE_DIR="./output/data/images"
 
 rm -f "$OUTPUT_FILE"
 mkdir -p tmp_pet_map
