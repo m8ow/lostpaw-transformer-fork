@@ -65,7 +65,7 @@ class PetImagesFolder:
             Path(p) if Path(p).is_absolute else self.image_folder / Path(p)
             for p in self.paths[idx]
         ]
-        pet_id = int(self.pet_ids[idx])
+        pet_id = self.pet_ids[idx]
 
         source = str(self.sources[idx]) if self.sources else None
         return (paths, pet_id, source)
