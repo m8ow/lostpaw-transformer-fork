@@ -30,14 +30,11 @@ python scripts/clean_dataset.py output/raw-data
 chmod +x generate_dogfacenet_data.sh
 ./generate_dogfacenet_data.sh
 
-## Augmentation用のモデルをダウンロード
-mkdir ./output/weights
-wget https://huggingface.co/facebook/detr-resnet-50/resolve/main/pytorch_model.bin -O ./output/weights/detr-resnet-50.pth
-
 ## ペット画像の切り出しとAugmentation
+mkdir ./output/weights
 python scripts/extract_pets.py \
   --info_file ./output/raw-data/raw-data.jsonl \
-  --model_path ./output/weights/detr-resnet-50.pth \
+  --model_path ./output/weights \
   --output_dir ./output/generated \
   --threads 4 \
   --batch_size 4

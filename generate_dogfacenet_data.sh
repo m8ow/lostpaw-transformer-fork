@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OUTPUT_FILE="./output/raw-data/converted.jsonl"
+OUTPUT_FILE="./output/raw-data/raw-data.jsonl"
 BASE_DIR="./output/raw-data"
 
 rm -f "$OUTPUT_FILE"
@@ -17,9 +17,10 @@ done
 for pet_file in tmp_pet_map/*.txt; do
     pet_id=$(basename "$pet_file" .txt)
     while IFS= read -r img; do
-        echo "{\"petId\": \"$pet_id\", \"savedPath\": \"$img\"}" >> "$OUTPUT_FILE"
+        abs_path=$(realpath "$img")  # ← 修正ポイント：絶対パスに変換
+        echo "{\"petId\": \"$pet_id\", \"savedPath\": \"$abs_path\"}" >> "$OUTPUT_FILE"
     done < "$pet_file"
 done
 
 rm -r tmp_pet_map
-echo "✅ converted.jsonl (1 image per line) written to $OUTPUT_FILE"
+echo "✅ converted.jsonl (absolute paths) written to $OUTPUT_FILE"
