@@ -28,7 +28,7 @@ class PetViTContrastiveModel(nn.Module):
             nn.Linear(2 * output_dim, 2 * output_dim),
             nn.ELU(),
             nn.Linear(2 * output_dim, output_dim),
-        )
+        ).to(self.device)
 
     def forward(self, x: Tensor):
         x = self.vit_encoder(x, return_tensors="pt").to(self.device)
