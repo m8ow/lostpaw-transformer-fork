@@ -36,7 +36,11 @@ if __name__ == "__main__":
         data_file = source / "train.data"
         with open(data_file, "rt") as f:
             for line in f:
+                line = line.strip()
+                if not line:
+                    continue  # ✅ 空行スキップ
                 record = json.loads(line)
+
                 pet_id = record["pet_id"]
                 source_path = record["source_path"]
                 augmented_paths = record["paths"]
