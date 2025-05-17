@@ -2,7 +2,7 @@
 info_path: "output/data/train.data"
 model_path: "output/models"
 similarity_probability: 0.35
-batches_per_epoch: null
+batches_per_epoch: 128
 
 # Logging
 use_wandb: False
@@ -11,7 +11,7 @@ use_tqdm: True
 # Model Hyperparameters
 epochs: 15
 latent_space_size: 512
-batch_size: 16
+batch_size: 8
 test_batch_size: 16
 test_batch_count: 8
 save_model_every: 50
@@ -21,12 +21,8 @@ cross_validiton_k_fold: 1
 # Optimizer
 optimizer: "adamw"
 optimizer_params:
-  lr: 3e-4
+  lr: 0.0003
   weight_decay: 0.01
-
-# Optional: Scheduler
-lr_scheduler: "cosine"
-lr_warmup_steps: 500
 
 # Contrastive loss
 contrastive_margin: 0.9

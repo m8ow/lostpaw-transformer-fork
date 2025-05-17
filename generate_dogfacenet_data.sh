@@ -1,7 +1,7 @@
 #!/bin/bash
 
-OUTPUT_FILE="./output/data/train.data"
-BASE_DIR="./output/data/images"
+OUTPUT_FILE="./output/raw-data.jsonl"
+BASE_DIR="./output/raw-data"
 
 rm -f "$OUTPUT_FILE"
 mkdir -p tmp_pet_map
@@ -13,24 +13,20 @@ for f in ${BASE_DIR}/*.jpg; do
     echo "$f" >> "tmp_pet_map/$pet_id.txt"
 done
 
-# 各 pet_id に対して連続ペアを作成 [[img1, img2], [img2, img3], ...]
+# 各 pet_id に対して全画像を列挙
 for pet_file in tmp_pet_map/*.txt; do
     pet_id=$(basename "$pet_file" .txt)
     mapfile -t images < "$pet_file"
-    num_images=${#images[@]}
-
-    if [ "$num_images" -ge 2 ]; then
-        group_list=""
-        for ((i = 0; i < num_images - 1; i++)); do
-            img1="${images[$i]}"
-            img2="${images[$((i + 1))]}"
-            group_list+="[\"$img1\", \"$img2\"],"
+    if [ "${#images[@]}" -gt 0 ]; then
+        path_list=""
+        for img in "${images[@]}"; do
+            path_list+="\"$img\","
         done
         # Remove trailing comma
-        group_list=${group_list%,}
-        echo "{\"pet_id\": \"$pet_id\", \"paths\": [${group_list}]}" >> "$OUTPUT_FILE"
+        path_list=${path_list%,}
+        echo "{\"pet_id\": \"$pet_id\", \"paths\": [${path_list}]}" >> "$OUTPUT_FILE"
     fi
 done
 
 rm -r tmp_pet_map
-echo "✅ train.data (paired group format) written to $OUTPUT_FILE"
+echo "✅ train.data (all image paths per pet_id) written to $OUTPUT_FILE"

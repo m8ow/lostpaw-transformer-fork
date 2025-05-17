@@ -2,12 +2,34 @@
 ```bash
 # install DogFaceNet dataset
 mkdir ./output
-mkdir ./output/data
-wget https://zenodo.org/records/12578449/files/DogFaceNet_alignment.zip -O ./output/data/images.zip
-unzip ./output/data/images.zip -d ./output/data/ && rm ./output/data/images.zip
-# unzipない場合: `python3 -c "import zipfile, os; z='./output/data/images.zip'; zipfile.ZipFile(z).extractall('./output/data/'); os.remove(z)"`
+wget https://zenodo.org/records/12578449/files/DogFaceNet_alignment.zip -O ./output/raw-data.zip
+unzip ./output/raw-data.zip -d ./output/ && rm ./output/raw-data.zip
+# unzipない場合: `python3 -c "import zipfile, os; z='./output/raw-data.zip'; zipfile.ZipFile(z).extractall('./output/raw-data/'); os.remove(z)"`
+
+# pre-treatment
+## 壊れたデータを検出
+python scripts/clean_dataset.py output/raw-data
+
+## raw-data.jsonlを作成
 chmod +x generate_dogfacenet_data.sh
 ./generate_dogfacenet_data.sh
+
+## Augmentation用のモデルをダウンロード
+mkdir ./output/weights
+wget https://huggingface.co/facebook/detr-resnet-50/resolve/main/pytorch_model.bin -O ./output/weights/detr-resnet-50.pth
+
+## ペット画像の切り出しとAugmentation
+python scripts/extract_pets.py \
+  --info_file ./output/raw-data.jsonl \
+  --model_path ./output/weights/detr-resnet-50.pth \
+  --output_dir ./output/generated \
+  --threads 4 \
+  --batch_size 4
+
+## マルチスレッド出力のマージ（必要に応じて）
+python scripts/extract_pets_merge.py \
+  output/generated/thread_* \
+  output/data
 
 # build
 docker buildx build --load -t lostpaw-transformer .
