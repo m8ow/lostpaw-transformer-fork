@@ -4,7 +4,7 @@ import json
 import logging
 from pathlib import Path
 from typing import Any, List, Set, Tuple
-from lostpaw.data import PetImagesDataset, DetrPetExtractor
+from lostpaw.data import PetImageDataset, DetrPetExtractor
 from lostpaw.data.auto_augment import DataAugmenter
 from multiprocessing import Process
 from PIL.Image import Image

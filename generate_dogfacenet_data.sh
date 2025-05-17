@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OUTPUT_FILE="./output/raw-data.jsonl"
+OUTPUT_FILE="./output/raw-data/raw-data.jsonl"
 BASE_DIR="./output/raw-data"
 
 rm -f "$OUTPUT_FILE"
