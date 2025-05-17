@@ -51,14 +51,13 @@ class PetViTContrastiveModel(nn.Module):
             self.vit_model = ViTModel.from_pretrained(model_path, local_files_only=True)
         else:
             self.vit_model = ViTModel.from_pretrained("google/vit-base-patch16-384")
-            self.vit_encoder: ViTFeatureExtractor = ViTFeatureExtractor.from_pretrained(
-                "google/vit-base-patch16-384"
-            )
+            self.vit_encoder = ViTFeatureExtractor.from_pretrained("google/vit-base-patch16-384")
             model_path.mkdir(exist_ok=True, parents=True)
             encoder_path.mkdir(exist_ok=True, parents=True)
             self.vit_model.save_pretrained(model_path)
             self.vit_encoder.save_pretrained(encoder_path)
 
+        self.vit_model.to(self.device)
 
     def load_model(self, path: Path):
         state = torch.load(path)
