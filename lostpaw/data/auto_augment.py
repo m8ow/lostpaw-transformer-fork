@@ -12,7 +12,7 @@ class DataAugmenter:
             T.AutoAugmentPolicy.IMAGENET,
             T.AutoAugmentPolicy.SVHN,
         ]
-        self.augmenters = [T.AutoAugment(policy) for policy in policies]
+        self.augmenters = [T.Compose([T.Resize(224), T.AutoAugment(policy)]) for policy in policies]
 
     def get_transforms(self, orig_img: Image, count=4):
         imgs = [

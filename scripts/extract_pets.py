@@ -37,7 +37,7 @@ def extract_images(
                 labels = zip(input_labels, input_paths)
 
                 cropped: List[Tuple[Image, Tuple[str, Any]]] = pet_extractor.extract(
-                    input_images, labels, output_size=(384, 384)
+                    input_images, labels, output_size=(224, 224)
                 )
                 for image, (label, path) in cropped:
                     augmented = pet_augment.get_transforms(image, 2)
