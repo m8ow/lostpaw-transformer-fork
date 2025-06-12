@@ -23,8 +23,10 @@ pip install -e .
 pip install "wandb==0.15.12" "pydantic<2.0"
 
 # pre-treatment
-## 壊れたデータを検出
+## 重複データを削除
 python scripts/clean_dataset.py output/raw-data
+## 壊れたデータを削除
+python pick_broken_image.py output/raw-data
 
 ## raw-data.jsonlを作成
 chmod +x generate_dogfacenet_data.sh
