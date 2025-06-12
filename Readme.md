@@ -22,6 +22,9 @@ pip install --upgrade pip
 pip install -e .
 pip install "wandb==0.15.12" "pydantic<2.0"
 
+## PetFaceNetのデータセットを変換
+python convert_petface.py
+
 # pre-treatment
 ## 重複データを削除
 python scripts/clean_dataset.py output/raw-data
