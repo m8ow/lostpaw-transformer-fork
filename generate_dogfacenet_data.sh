@@ -7,7 +7,7 @@ rm -f "$OUTPUT_FILE"
 mkdir -p tmp_pet_map
 
 # グルーピング：画像を pet_id ごとに分類
-for f in ${BASE_DIR}/*.jpg; do
+for f in ${BASE_DIR}/*.{jpg,png}; do
     filename=$(basename "$f")
     pet_id=$(echo "$filename" | cut -d'.' -f1)
     echo "$f" >> "tmp_pet_map/$pet_id.txt"
