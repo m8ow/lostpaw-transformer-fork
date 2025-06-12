@@ -29,8 +29,7 @@ python scripts/clean_dataset.py output/raw-data
 python pick_broken_image.py output/raw-data
 
 ## raw-data.jsonlを作成
-chmod +x generate_dogfacenet_data.sh
-./generate_dogfacenet_data.sh
+python generate_dogfacenet_data.py
 
 ## ペット画像の切り出しとAugmentation
 huggingface-cli login # tokenを自分で発行して、入力してください
