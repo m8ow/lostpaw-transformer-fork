@@ -111,44 +111,6 @@ The `info_path` flag requires a file that contains rows of image entries, which 
 
 The `paths` key can contain as many image paths as you desire, where each path should point to a different augmentation of the same image. For different images per pet include multiple entries with the same `pet_id`.
 
-# Webapp Demo
-Our project aims to make a contrastive learning model available to a broader audience by developing a user-friendly web application. The web application, developed with HTML, CSS, and JavaScript, is accessible from any device with a web browser, allowing users to upload pictures of their pets and find similar pets in the system. Once the uploaded image is processed by the contrastive learning model, the web application returns a list of pets with their similarity score.
-
-Future implementations of the web application can include features that restrict the search to a specific area or search pets based on breed, size, or other criteria. This can be useful for people who are trying to find lost pets or for those who are looking to adopt a pet. Overall, our web application is a convenient tool that makes use of the power of contrastive learning to help users identify and find pets.
-
-The webapp requires `node`, with an `npm` version of at least 9.2.0. In the current version, the demo only supports the following:
-
-- **Login using OIDC:**
-    - Navigate to login page.
-    - Use OpenID connect to authenticate.
-        - Get redirect URL from backend.
-        - User gets redirected.
-        - Once user gets back, forward `state` and `code` to backend and get
-          session token.
-    - Cache session token to stay logged in.
-- **Report missing pet:**
-    - Click big plus button found on the bottom right of the map
-    - Select "Report missing"
-    - Popup appears
-    - Add image to form
-    - Send form to backend
-    - Missing is sent to Rust backend for processing
-    - Once the pictures have been processed, the mean embedding is computed and searched against known pets.
-    - Embedding is saved in memory and compared against new found pets.
-
-As described earlier, the demo will only allow users to submit an image of a pet, and will only compare the resulting latent space with other latent spaces already available in the system. Before running the demo, make sure that a few pet images are available in the `webapp/backend/example_pets` folder. The Rust backend will parse this folder in order to calculate latent spaces that will be used to compare any incoming image.
-
-To run the front-end:
-```bash
-cd webapp/frontend
-npm run dev
-```
-
-To run the back-end (make sure `webapp/backend/example_pets` exists!):
-```bash
-cd webapp/backend
-cargo run
-```
 
 # Resources
 A project created for the "High Tech Systems and Materials" Honours Master's track at the University of Groningen.
