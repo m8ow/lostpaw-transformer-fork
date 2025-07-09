@@ -1,3 +1,19 @@
+"""
+マルチスレッドペット抽出出力統合スクリプト
+
+複数のextract_pets.pyスレッドの出力を単一の統合データセットに結合します。
+処理済み画像、メタデータを統合し、モデル学習に必要な形式の最終学習データファイルを作成します。
+
+主な機能:
+1. 複数のスレッド出力を単一のデータセットに統合
+2. 全スレッドのprocessed.txtファイルを統合
+3. 画像ファイルとメタデータを結合
+4. 対比学習用のペア形式で最終train.dataファイルを作成
+
+使用方法:
+    python extract_pets_merge.py output/generated/thread_* output/data
+"""
+
 from argparse import ArgumentParser
 from pathlib import Path
 from shutil import copyfileobj

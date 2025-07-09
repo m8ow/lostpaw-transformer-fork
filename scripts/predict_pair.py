@@ -1,3 +1,15 @@
+"""
+画像ペア比較・類似度判定ユーティリティ
+
+このスクリプトは以下の機能を提供します：
+1. 学習済みモデルを使用した2枚の画像の特徴量抽出
+2. コサイン類似度による画像間の類似度計算
+3. 閾値ベースでの同一個体判定
+
+使用方法:
+    python predict_pair.py image1.jpg image2.jpg --model model.pt --threshold 0.85
+"""
+
 import torch
 from PIL import Image
 import argparse

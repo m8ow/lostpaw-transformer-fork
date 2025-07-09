@@ -1,3 +1,19 @@
+"""モデル評価・テストスクリプト
+
+学習済みペット顔認識モデルをテストデータで評価し、精度、適合率、再現率、
+F1スコアなどの様々な指標を計算します。テストバッチを処理し、性能統計をレポートします。
+
+主な機能:
+1. バッチベースのモデル評価
+2. 複数の評価指標の計算
+3. 設定可能なテストバッチサイズと数
+4. 学習済みモデルチェックポイントとの互換性
+
+使用方法:
+    python test.py -c config.yaml
+    python test.py -c config.yaml --test_batch_size 16
+"""
+
 from pathlib import Path
 from pprint import pprint
 from lostpaw.config.args import get_args

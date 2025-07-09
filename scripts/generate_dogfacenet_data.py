@@ -1,3 +1,15 @@
+"""
+DogFaceNet学習データ生成ユーティリティ
+
+このスクリプトは以下の機能を提供します：
+1. 指定ディレクトリ内の画像ファイル（jpg/png）を自動検出
+2. ファイル名から犬のIDを抽出してグルーピング
+3. JSONL形式でのデータセット情報ファイル生成
+
+使用方法:
+    python generate_dogfacenet_data.py
+"""
+
 import json
 from pathlib import Path
 from collections import defaultdict

@@ -1,3 +1,19 @@
+"""
+Weights & Biasesを使用したハイパーパラメータースイープスクリプト
+
+Weights & Biases (wandb)を使用してペット顔認識モデルのハイパーパラメータースイープを設定・実行します。
+YAMLファイルからスイープ設定を読み取り、スイープ実行を管理します。
+
+主な機能:
+1. YAMLベースのスイープ設定
+2. 実験追跡のためのWeights & Biases統合
+3. 設定可能なハイパーパラメーター範囲と分布
+4. 自動スイープ実行と監視
+
+使用方法:
+    python sweep.py --model ./models --info ./data/train.data --config sweep_config.yaml
+"""
+
 import argparse
 from pathlib import Path
 import yaml

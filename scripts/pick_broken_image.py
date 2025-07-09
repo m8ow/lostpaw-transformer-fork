@@ -1,3 +1,18 @@
+"""破損画像検出・削除ユーティリティ
+
+データセット処理中の問題を防ぐために、ディレクトリ内の破損したまたは読み取り不可能な画像ファイルをスキャンして削除します。
+整合性を検証するため、各画像をロードしてRGB形式に変換を試行します。
+
+主な機能:
+1. 画像ファイルのディレクトリスキャン
+2. ロードとRGB変換による各画像のテスト
+3. ロードや変換に失敗したファイルの削除
+4. 詳細なエラーレポートの提供
+
+使用方法:
+    python pick_broken_image.py <image_directory>
+"""
+
 from PIL import Image
 import os
 from argparse import ArgumentParser

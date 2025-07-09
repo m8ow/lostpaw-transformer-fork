@@ -1,3 +1,15 @@
+"""
+PetFaceデータセット変換ユーティリティ
+
+このスクリプトは以下の機能を提供します：
+1. 入力フォルダ内のPNGファイルを再帰的に検索
+2. ディレクトリ名を接頭辞とした新しいファイル名で出力フォルダにコピー
+3. フォルダ構造を平坦化してファイル管理を簡素化
+
+使用方法:
+    python convert_petface.py input_folder output_folder
+"""
+
 import sys
 from pathlib import Path
 import shutil

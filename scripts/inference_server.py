@@ -1,3 +1,15 @@
+"""
+犬画像認識推論サーバー
+
+このスクリプトは以下の機能を提供します：
+1. FlaskベースのREST APIサーバー
+2. 画像データを受け取り特徴量ベクトルを返すエンドポイント
+3. 学習済みモデルを使用したリアルタイム推論
+
+使用方法:
+    python inference_server.py --model model.pt
+"""
+
 from flask import Flask, request, jsonify
 from PIL import Image
 from numpy import array

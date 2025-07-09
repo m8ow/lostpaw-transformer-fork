@@ -1,3 +1,16 @@
+"""
+データセットクリーニングと学習/テスト分割ユーティリティ
+
+このスクリプトは以下の機能を提供します：
+1. ソースパスに基づいてデータセットから重複画像を削除
+2. 設定可能な比率で学習用とテスト用データセットに分割
+3. 分割後のペットID別画像分布の解析
+
+使用方法:
+    python clean_dataset.py <dataset_path> --deduplicate
+    python clean_dataset.py <dataset_path> --split-to test.jsonl --split-percentage 0.1
+"""
+
 from argparse import ArgumentParser
 from os import remove
 from pathlib import Path

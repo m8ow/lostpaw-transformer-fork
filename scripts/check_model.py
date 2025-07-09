@@ -1,3 +1,15 @@
+"""
+学習済みモデルの検証・デバッグユーティリティ
+
+このスクリプトは以下の機能を提供します：
+1. 学習済みモデルファイル（.pt）の内容確認
+2. state_dictの正常な読み込み確認
+3. モデルパラメータの統計情報表示
+
+使用方法:
+    python check_model.py
+"""
+
 import torch
 from pathlib import Path
 from lostpaw.model.model import PetViTContrastiveModel

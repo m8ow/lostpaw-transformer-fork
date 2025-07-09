@@ -1,3 +1,20 @@
+"""
+ペット顔抽出とデータ拡張処理プロセッサ
+
+このスクリプトは、DETRモデルを使用してフル画像からペットの顔を抽出し、
+データ拡張を適用して学習用データセットを作成します。大規模データセットの
+効率的なバッチ処理のためのマルチスレッド処理をサポートします。
+
+主な機能:
+1. DETR（Detection Transformer）を使用してペット顔を検出・抽出
+2. データ拡張（回転、反転、色調整）の適用
+3. スケーラビリティのためのマルチスレッド処理
+4. 整理されたディレクトリ構造での抽出顔の保存
+
+使用方法:
+    python extract_pets.py --info_file data.jsonl --model_path ./models --output_dir ./output --threads 4
+"""
+
 from argparse import ArgumentParser, Namespace
 import multiprocessing
 multiprocessing.set_start_method("spawn", force=True)

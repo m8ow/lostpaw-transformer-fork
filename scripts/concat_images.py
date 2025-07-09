@@ -1,3 +1,15 @@
+"""
+画像結合ユーティリティ
+
+このスクリプトは以下の機能を提供します：
+1. 複数の画像を水平方向に結合
+2. グロブパターンによる画像ファイルの一括読み込み
+3. 結合画像のPNG形式での保存
+
+使用方法:
+    python concat_images.py image1.jpg image2.jpg "folder/*.png"
+"""
+
 from glob import glob
 import sys
 from PIL import Image, ImageDraw
