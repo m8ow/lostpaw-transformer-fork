@@ -111,6 +111,90 @@ The `info_path` flag requires a file that contains rows of image entries, which 
 
 The `paths` key can contain as many image paths as you desire, where each path should point to a different augmentation of the same image. For different images per pet include multiple entries with the same `pet_id`.
 
+# プロジェクト構造
+
+このプロジェクトは、コアライブラリと実行可能スクリプトに分かれた標準的なPythonパッケージ構造を採用しています：
+
+## `lostpaw/` - コアライブラリパッケージ
+
+ペット顔認識のためのメインライブラリで、以下のモジュールで構成されています：
+
+```
+lostpaw/
+├── config/          # 設定管理
+│   ├── args.py      # コマンドライン引数とYAML設定の解析
+│   └── config.py    # 設定クラス（TrainConfig、OptimizerConfig）
+├── configs/         # YAML設定ファイル
+│   ├── default.yaml # デフォルト学習設定
+│   ├── sweep.yaml   # ハイパーパラメータースイープ設定
+│   └── container.yaml # コンテナ用設定
+├── data/            # データ処理・読み込み
+│   ├── auto_augment.py    # データ拡張ユーティリティ
+│   ├── data_folder.py     # フォルダベースデータ処理
+│   ├── dataset.py         # データセットクラス
+│   └── extract_pets.py    # ペット顔抽出ユーティリティ
+└── model/           # モデル定義・学習
+    ├── loss.py      # 損失関数（対比損失）
+    ├── model.py     # モデル定義（PetViTContrastiveModel）
+    └── trainer.py   # 学習ロジック
+```
+
+## `scripts/` - 実行可能スクリプト
+
+`lostpaw`パッケージを使用するコマンドラインツール群：
+
+### 学習・評価スクリプト
+- `train.py` - メイン学習スクリプト（クロスバリデーション対応）
+- `test.py` - モデル評価・テストスクリプト
+- `sweep.py` - Weights & Biasesを使用したハイパーパラメータースイープ
+
+### データ処理スクリプト
+- `extract_pets.py` - DETR使用のペット顔抽出・データ拡張
+- `extract_pets_merge.py` - マルチスレッド処理結果の統合
+- `clean_dataset.py` - データセットクリーニング・分割
+- `pick_broken_image.py` - 破損画像の検出・削除
+- `convert_petface.py` - PetFaceデータセット変換
+- `generate_dogfacenet_data.py` - DogFaceNet学習データ生成
+
+### 推論・ユーティリティスクリプト
+- `inference_server.py` - Flask推論サーバー
+- `predict_pair.py` - 画像ペア比較・類似度判定
+- `check_model.py` - モデル検証・デバッグ
+- `visualize_data.py` - データセット可視化
+- `plot_test_scores.py` - 学習メトリクス可視化
+- `concat_images.py` - 画像結合ユーティリティ
+
+## 設計原則
+
+**関心の分離**: 
+- `lostpaw/`にコア機能を集約
+- `scripts/`でユーザーインターフェースを提供
+
+**再利用性**: 
+- `lostpaw`パッケージは様々な文脈で利用可能
+- スクリプトは`lostpaw`パッケージを活用してタスクを実行
+
+**モジュール性**: 
+- 各モジュールは明確な責任を持つ（data、model、config）
+- クリーンなインターフェースでの相互作用
+
+## 使用例
+
+```python
+# lostpawパッケージの直接利用
+from lostpaw.model import PetViTContrastiveModel
+from lostpaw.data import PetImageDataset
+from lostpaw.config import TrainConfig
+
+# 設定の読み込み
+config = TrainConfig.from_yaml("lostpaw/configs/default.yaml")
+
+# モデルの作成
+model = PetViTContrastiveModel(config.model_path, config.output_dim)
+
+# データセットの作成
+dataset = PetImageDataset(config.info_path)
+```
 
 # Resources
 A project created for the "High Tech Systems and Materials" Honours Master's track at the University of Groningen.
