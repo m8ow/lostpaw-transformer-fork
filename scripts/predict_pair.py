@@ -49,8 +49,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Compare two dog images")
     parser.add_argument("img1", type=str, help="Path to first image")
     parser.add_argument("img2", type=str, help="Path to second image")
-    parser.add_argument("--model", type=str, default="output/models/model_2025_05_15_183913.pt", help="Path to model weights")
-    parser.add_argument("--model_dir", type=str, default="output/models", help="Path to directory containing encoder and model subfolders")
+    parser.add_argument("--model", type=str, default="../output/models/model_2025_05_15_183913.pt", help="Path to model weights")
+    parser.add_argument("--model_dir", type=str, default="../output/models", help="Path to directory containing encoder and model subfolders")
     parser.add_argument("--latent_dim", type=int, default=128, help="Latent space size")
     parser.add_argument("--threshold", type=float, default=0.85, help="Cosine similarity threshold for match")
 

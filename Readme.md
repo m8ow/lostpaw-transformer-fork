@@ -23,16 +23,16 @@ pip install -e .
 pip install "wandb==0.15.12" "pydantic<2.0"
 
 ## PetFaceNetのデータセットを変換
-python convert_petface.py
+python scripts/convert_petface.py
 
 # pre-treatment
 ## 重複データを削除
 python scripts/clean_dataset.py output/raw-data
 ## 壊れたデータを削除
-python pick_broken_image.py output/raw-data
+python scripts/pick_broken_image.py output/raw-data
 
 ## raw-data.jsonlを作成
-python generate_dogfacenet_data.py
+python scripts/generate_dogfacenet_data.py
 
 ## ペット画像の切り出しとAugmentation
 huggingface-cli login # tokenを自分で発行して、入力してください

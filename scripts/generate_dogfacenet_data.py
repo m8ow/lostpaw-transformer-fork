@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from collections import defaultdict
 
-base_dir = Path("./output/raw-data")
+base_dir = Path("../output/raw-data")
 output_file = base_dir / "raw-data.jsonl"
 tmp_map = defaultdict(list)
 

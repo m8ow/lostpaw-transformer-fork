@@ -3,8 +3,8 @@ from pathlib import Path
 from lostpaw.model.model import PetViTContrastiveModel
 
 # ====== 設定 ======
-MODEL_PATH = Path("output/models/model_2025_05_15_183913.pt")
-MODEL_DIR = Path("output/models")  # ViT encoderやconfigが保存されてるフォルダ
+MODEL_PATH = Path("../output/models/model_2025_05_15_183913.pt")
+MODEL_DIR = Path("../output/models")  # ViT encoderやconfigが保存されてるフォルダ
 LATENT_DIM = 128
 
 # ====== モデル初期化 ======
